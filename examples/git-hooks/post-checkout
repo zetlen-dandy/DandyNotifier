@@ -1,0 +1,56 @@
+#!/bin/bash
+# Example post-checkout hook for DandyNotifier
+# 
+# Installation:
+#   cp examples/git-hooks/post-checkout .git/hooks/
+#   chmod +x .git/hooks/post-checkout
+
+PREV_HEAD=$1
+NEW_HEAD=$2
+BRANCH_CHECKOUT=$3
+
+# Only run on branch checkouts
+if [[ "$BRANCH_CHECKOUT" != "1" ]]; then
+    exit 0
+fi
+
+# Get branch name
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+# Run your post-checkout tasks
+LOG_FILE="/tmp/post-checkout-$(date +%s).log"
+{
+    echo "=== Post-checkout hook ==="
+    echo "Branch: $BRANCH"
+    echo "Previous HEAD: $PREV_HEAD"
+    echo "New HEAD: $NEW_HEAD"
+    echo ""
+    
+    # Example: Run linting
+    if command -v npm &> /dev/null; then
+        echo "Running linter..."
+        npm run lint 2>&1 || {
+            # Notify on failure
+            /usr/local/bin/dandy-notify \
+                -t "Repository" \
+                -s "post-checkout hook" \
+                -m "Linting failed on branch '$BRANCH'. Click to view details." \
+                -o "file://$LOG_FILE" \
+                -g "git-hooks" \
+                --sound "/System/Library/Sounds/Basso.aiff"
+            exit 0
+        }
+    fi
+    
+    echo "✓ All checks passed"
+} > "$LOG_FILE" 2>&1
+
+# Notify success
+/usr/local/bin/dandy-notify \
+    -t "Repository" \
+    -s "post-checkout hook" \
+    -m "Checked out branch '$BRANCH' successfully" \
+    -g "git-hooks" \
+    --sound "/System/Library/Sounds/Ping.aiff"
+
+

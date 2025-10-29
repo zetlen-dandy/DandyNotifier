@@ -1,0 +1,48 @@
+#!/bin/bash
+# Example post-commit hook for DandyNotifier
+#
+# Installation:
+#   cp examples/git-hooks/post-commit .git/hooks/
+#   chmod +x .git/hooks/post-commit
+
+# Get commit info
+COMMIT_SHA=$(git rev-parse --short HEAD)
+COMMIT_MSG=$(git log -1 --pretty=%B)
+AUTHOR=$(git log -1 --pretty=%an)
+
+# Run post-commit tasks
+LOG_FILE="/tmp/post-commit-$(date +%s).log"
+{
+    echo "=== Post-commit hook ==="
+    echo "Commit: $COMMIT_SHA"
+    echo "Author: $AUTHOR"
+    echo "Message: $COMMIT_MSG"
+    echo ""
+    
+    # Example: Run tests
+    if command -v npm &> /dev/null && [ -f "package.json" ]; then
+        echo "Running tests..."
+        if ! npm test 2>&1; then
+            # Notify on test failure
+            /usr/local/bin/dandy-notify \
+                -t "Repository" \
+                -s "post-commit hook" \
+                -m "Tests failed for commit $COMMIT_SHA. Click to view logs." \
+                -o "file://$LOG_FILE" \
+                -g "git-hooks" \
+                --sound "/System/Library/Sounds/Basso.aiff"
+            exit 0
+        fi
+    fi
+    
+    echo "✓ All tests passed"
+} > "$LOG_FILE" 2>&1
+
+# Notify success
+/usr/local/bin/dandy-notify \
+    -t "Repository" \
+    -s "post-commit hook" \
+    -m "Commit $COMMIT_SHA completed successfully" \
+    -g "git-hooks"
+
+

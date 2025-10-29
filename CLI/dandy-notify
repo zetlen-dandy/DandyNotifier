@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+# dandy-notify - CLI client for DandyNotifier server
+# Usage: dandy-notify [options]
+
+set -euo pipefail
+
+# Configuration
+DANDY_SERVER_URL="${DANDY_SERVER_URL:-http://localhost:8889}"
+TOKEN_FILE="${HOME}/.dandy-notifier-token"
+
+# Read auth token
+if [[ ! -f "$TOKEN_FILE" ]]; then
+    echo "Error: Auth token not found at $TOKEN_FILE" >&2
+    echo "Make sure DandyNotifier.app is running and has created the token." >&2
+    exit 1
+fi
+
+TOKEN=$(cat "$TOKEN_FILE")
+
+# Default values
+TITLE=""
+SUBTITLE=""
+MESSAGE=""
+GROUP=""
+SOUND=""
+ICON=""
+ACTION_ID=""
+ACTION_LABEL=""
+ACTION_TYPE="open"
+ACTION_LOCATION=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--title)
+            TITLE="$2"
+            shift 2
+            ;;
+        -s|--subtitle)
+            SUBTITLE="$2"
+            shift 2
+            ;;
+        -m|--message)
+            MESSAGE="$2"
+            shift 2
+            ;;
+        -g|--group)
+            GROUP="$2"
+            shift 2
+            ;;
+        --sound)
+            SOUND="$2"
+            shift 2
+            ;;
+        --icon)
+            ICON="$2"
+            shift 2
+            ;;
+        -o|--open)
+            ACTION_LOCATION="$2"
+            ACTION_ID="open_action"
+            ACTION_LABEL="Open"
+            shift 2
+            ;;
+        --action-id)
+            ACTION_ID="$2"
+            shift 2
+            ;;
+        --action-label)
+            ACTION_LABEL="$2"
+            shift 2
+            ;;
+        -h|--help)
+            cat <<EOF
+Usage: dandy-notify [options]
+
+Options:
+  -t, --title TITLE          Notification title (required)
+  -s, --subtitle SUBTITLE    Notification subtitle
+  -m, --message MESSAGE      Notification message (required)
+  -g, --group GROUP          Group identifier for related notifications
+  --sound PATH               Path to custom sound file (.aiff)
+  --icon PATH                Path to icon image file
+  -o, --open LOCATION        URL or file path to open when clicked
+  --action-id ID             Custom action identifier
+  --action-label LABEL       Custom action button label
+  -h, --help                 Show this help message
+
+Environment Variables:
+  DANDY_SERVER_URL           Server URL (default: http://localhost:8889)
+
+Examples:
+  # Simple notification
+  dandy-notify -t "Build Complete" -m "Your project compiled successfully"
+
+  # With action button
+  dandy-notify -t "Test Failed" -m "Click to view logs" -o "file:///tmp/test.log"
+
+  # Git hook notification
+  dandy-notify \\
+    -t "Repository" \\
+    -s "post-commit hook" \\
+    -m "Linting failed" \\
+    -o "file:///path/to/lint-output.txt" \\
+    -g "git-hooks" \\
+    --sound "/System/Library/Sounds/Basso.aiff"
+
+EOF
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1" >&2
+            echo "Use -h or --help for usage information" >&2
+            exit 1
+            ;;
+    esac
+done
+
+# Validate required arguments
+if [[ -z "$TITLE" ]] || [[ -z "$MESSAGE" ]]; then
+    echo "Error: --title and --message are required" >&2
+    echo "Use -h or --help for usage information" >&2
+    exit 1
+fi
+
+# Build JSON payload
+build_json() {
+    local json='{"notification":{'
+    json+="\"title\":\"$TITLE\""
+    json+=",\"message\":\"$MESSAGE\""
+    
+    [[ -n "$SUBTITLE" ]] && json+=",\"subtitle\":\"$SUBTITLE\""
+    [[ -n "$GROUP" ]] && json+=",\"group\":\"$GROUP\""
+    [[ -n "$SOUND" ]] && json+=",\"sound\":\"$SOUND\""
+    [[ -n "$ICON" ]] && json+=",\"icon\":\"$ICON\""
+    
+    if [[ -n "$ACTION_LOCATION" ]]; then
+        json+=",\"action\":{"
+        json+="\"id\":\"$ACTION_ID\""
+        json+=",\"label\":\"$ACTION_LABEL\""
+        json+=",\"type\":\"$ACTION_TYPE\""
+        json+=",\"location\":\"$ACTION_LOCATION\""
+        json+="}"
+    fi
+    
+    json+='}}'
+    echo "$json"
+}
+
+JSON_PAYLOAD=$(build_json)
+
+# Send request to server
+HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+    -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $TOKEN" \
+    -d "$JSON_PAYLOAD" \
+    "$DANDY_SERVER_URL/notify")
+
+if [[ "$HTTP_CODE" == "200" ]]; then
+    exit 0
+else
+    echo "Error: Server returned HTTP $HTTP_CODE" >&2
+    exit 1
+fi
+
+

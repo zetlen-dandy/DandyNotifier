@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.orthly.DandyNotifier</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/DandyNotifier.app/Contents/MacOS/DandyNotifier</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <!-- KeepAlive removed - app won't auto-restart if you quit it -->
+    <!-- If you want auto-restart on crash, uncomment this: -->
+    <!--
+    <key>KeepAlive</key>
+    <dict>
+        <key>Crashed</key>
+        <true/>
+    </dict>
+    -->
+    <key>StandardOutPath</key>
+    <string>/tmp/DandyNotifier.log</string>
+    <key>StandardErrorPath</key>
+    <string>/tmp/DandyNotifier.error.log</string>
+</dict>
+</plist>
