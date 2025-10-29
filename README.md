@@ -153,7 +153,6 @@ curl -X POST http://localhost:8889/notify \
     "subtitle": "string (optional)",
     "group": "string (optional)",
     "sound": "string (optional, path to .aiff file)",
-    "icon": "string (optional, path to image)",
     "action": {
       "id": "string (required)",
       "label": "string (required)",
