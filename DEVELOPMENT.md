@@ -17,7 +17,7 @@ killall DandyNotifier  # Stop when done
 1. Kills any running instances (dev or installed)
 2. Unloads LaunchAgent (if present)
 3. Runs app from `build/Build/Products/Release/DandyNotifier.app`
-4. Starts server on port 7777
+4. Starts server on port 8889
 5. Creates token at `~/.dandy-notifier-token`
 
 ### 🚀 Production Mode
@@ -59,12 +59,12 @@ killall DandyNotifier
 
 ### Avoiding Port Conflicts
 
-Only **one instance** can run at a time (port 7777). If you get "Address already in use":
+Only **one instance** can run at a time (port 8889). If you get "Address already in use":
 
 ```bash
 # Check what's running
 pgrep -fl DandyNotifier
-lsof -i :7777
+lsof -i :8889
 
 # Kill everything
 killall DandyNotifier
@@ -192,8 +192,8 @@ This runs `test-notification.sh` which verifies:
 ### App Won't Start
 
 ```bash
-# Check if something is using port 7777
-lsof -i :7777
+# Check if something is using port 8889
+lsof -i :8889
 
 # Check for crashes
 log show --predicate 'process == "DandyNotifier"' --last 5m
@@ -210,7 +210,7 @@ make dev
 pgrep DandyNotifier
 
 # Check server health
-curl http://localhost:7777/health
+curl http://localhost:8889/health
 
 # Verify token exists
 ls -la ~/.dandy-notifier-token
