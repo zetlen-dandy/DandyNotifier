@@ -109,13 +109,18 @@ class NotificationManager {
         // Handle file:// URLs and regular paths
         let url: URL
         if location.hasPrefix("file://") {
-            url = URL(string: location)!
+            guard let parsedURL = URL(string: location) else {
+                return
+            }
+            url = parsedURL
         } else {
             url = URL(fileURLWithPath: location)
         }
         
-        // Open with default application
-        NSWorkspace.shared.open(url)
+        // Open with default application - must run on main thread
+        DispatchQueue.main.async {
+            NSWorkspace.shared.open(url)
+        }
     }
 }
 

@@ -1,0 +1,92 @@
+default	08:38:55.486232-0500	DandyNotifier	-[NWConcrete_nw_listener handleInbound:addProtocolInbox:] [L1] Handling inbound connection (add inbox 0) [C7 ::1.50215 tcp, local: ::1.8889, definite, attribution: developer, server, prohibit joining, path satisfied (Path is satisfied), interface: lo0, scoped]
+default	08:38:55.486372-0500	DandyNotifier	[C7 73FF9CC2-4D61-4DF7-8393-56495C9CF8D5 ::1.50215 tcp, definite, server, prohibit joining, attribution: developer, reuse local address, local only, context: Default Network Context (private), proc: 79A4E984-BF7C-3FFB-8190-31C9376D09EC, local address: ::1.8889] start
+default	08:38:55.486401-0500	DandyNotifier	[C7 ::1.50215 initial socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] event: path:start @0.000s
+default	08:38:55.486426-0500	DandyNotifier	[C7 ::1.50215 waiting socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] event: path:satisfied @0.000s, uuid: FDCFE813-ACB0-4C11-8D94-961A75E74628
+default	08:38:55.486489-0500	DandyNotifier	[C7 ::1.50215 in_progress socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] event: flow:start_connect @0.000s
+default	08:38:55.486500-0500	DandyNotifier	nw_connection_report_state_with_handler_on_nw_queue [C7] reporting state preparing
+default	08:38:55.486526-0500	DandyNotifier	nw_flow_connected [C7 ::1.50215 in_progress socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] Output protocol connected (socket)
+default	08:38:55.486614-0500	DandyNotifier	[C7 ::1.50215 ready socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] event: flow:finish_connect @0.000s
+default	08:38:55.486821-0500	DandyNotifier	nw_connection_report_state_with_handler_on_nw_queue [C7] reporting state ready
+default	08:38:55.486860-0500	DandyNotifier	[C7 ::1.50215 ready socket-flow (satisfied (Path is satisfied), viable, interface: lo0, scoped)] event: flow:changed_viability @0.000s
+default	08:38:55.487274-0500	DandyNotifier	[com.orthly.DandyNotifier] Setting 1 notification categories
+default	08:38:55.487401-0500	DandyNotifier	[com.orthly.DandyNotifier] Adding notification request 76F8-50D3 to destinations: Default, contentDate: (null)
+default	08:38:55.487608-0500	DandyNotifier	[C7 73FF9CC2-4D61-4DF7-8393-56495C9CF8D5 ::1.50215 tcp, local: ::1.8889, definite, attribution: developer, server, prohibit joining] cancel
+default	08:38:55.487668-0500	DandyNotifier	[C7 73FF9CC2-4D61-4DF7-8393-56495C9CF8D5 ::1.50215 tcp, local: ::1.8889, definite, attribution: developer, server, prohibit joining] cancelled
+	[C7 FDCFE813-ACB0-4C11-8D94-961A75E74628 ::1.8889<->::1.50215]
+	Connected Path: satisfied (Path is satisfied), viable, interface: lo0, scoped
+	Privacy Stance: Not Eligible
+	Duration: 0.001s, TCP @0.000s took 0.000s
+	bytes in/out: 626/40, packets in/out: 1/1, rtt: 0.001s, retransmitted bytes: 0, out-of-order bytes: 0
+	ecn packets sent/acked/marked/lost: 0/0/0/0
+default	08:38:55.487718-0500	DandyNotifier	nw_flow_disconnected [C7 ::1.50215 cancelled socket-flow ((null))] Output protocol disconnected
+default	08:38:55.487746-0500	DandyNotifier	nw_connection_report_state_with_handler_on_nw_queue [C7] reporting state cancelled
+default	08:38:55.488837-0500	usernoted	com.orthly.DandyNotifier setNotificationCategories: 1: ["ACTIONABLE"]
+default	08:38:55.489062-0500	usernoted	Reducing interruption level from .timeSensitive for notification from com.orthly.DandyNotifier - missing authorization
+default	08:38:55.489155-0500	usernoted	Adding new request, remove notifications similar to: <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560">
+default	08:38:55.489231-0500	usernoted	com.orthly.DandyNotifier removeDeliveredNotification(similarTo: ["76F8-50D3"], source: 404EB560-9E1F-4206-9F4B-80744E986786)
+error	08:38:55.489268-0500	usernoted	com.orthly.DandyNotifier Found no match to delete for ["76F8-50D3"]
+default	08:38:55.489809-0500	DandyNotifier	[com.orthly.DandyNotifier] Added notification request: [ hasError: 0 hasCompletionHandler: 1 ]
+default	08:38:55.489732-0500	usernoted	<NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560"> successfully processed by pipeline, scheduled for delivery.
+default	08:38:55.592510-0500	usernoted	Delivering <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560"> to [ .alert .lockScreen .notificationCenter ]: shouldDeliver: true, updatedExisting: false
+default	08:38:55.592736-0500	usernoted	Presenting <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560"> as alert (["badge", "sound", "alert"])
+default	08:38:55.593194-0500	NotificationCenter	[com.apple.private.nc.dnd:C25FC0D1-58DE-4D82-8071-BB91D143AFE7] Resolving behavior for event, details=<DNDMutableClientEventDetails: 0x6000020e6e00; identifier: '46C7C22F-0AA7-43FF-9267-5600814B38E3'; bundleIdentifier: com.orthly.DandyNotifier; platform: unknown; type: Default; urgency: Default; sender: (null); threadIdentifier: 1842D4107F97DF5E; filterCritera: (null); notifyAnyway: 0; behavior: Default; forwardingBehavior: (null); title: C712C08B7149EAE9; subtitle: 7368B2F29F78FA2C; body: D8960B5532D2E63>
+default	08:38:55.594104-0500	donotdisturbd	Event was resolved: resolution=<DNDSEventBehaviorResolution: 0xc94ca1f40; UUID: 11145151-E3FC-41BC-AA61-7D6A90F420E9; date: 2025-10-29 13:38:55 +0000; eventBehavior: <DNDClientEventBehavior: 0xc94c67fc0; eventDetails: <DNDClientEventDetails: 0xc94c1c080; identifier: '46C7C22F-0AA7-43FF-9267-5600814B38E3'; bundleIdentifier: com.orthly.DandyNotifier; platform: unknown; type: Default; urgency: Default; sender: (null); threadIdentifier: 1842D4107F97DF5E; filterCritera: (null); notifyAnyway: 0; behavior: Default; forwardingBehavior: (null); title: C712C08B7149EAE9; subtitle: C712C08B7149EAE9; body: D8960B5532D2E63>; interruptionSuppression: none; intelligentBehavior: unused; resolutionReason: disabled; activeModeUUID: (null)>; clientIdentifier: 'com.apple.nc.donotdisturb.user-toggles.preload'; outcome: allowed; reason: disabled>
+default	08:38:55.594388-0500	NotificationCenter	[com.apple.private.nc.dnd:C25FC0D1-58DE-4D82-8071-BB91D143AFE7] Resolved event, details=<DNDMutableClientEventDetails: 0x6000020e6e00; identifier: '46C7C22F-0AA7-43FF-9267-5600814B38E3'; bundleIdentifier: com.orthly.DandyNotifier; platform: unknown; type: Default; urgency: Default; sender: (null); threadIdentifier: 1842D4107F97DF5E; filterCritera: (null); notifyAnyway: 0; behavior: Default; forwardingBehavior: (null); title: C712C08B7149EAE9; subtitle: 7368B2F29F78FA2C; body: D8960B5532D2E63> behavior=<DNDClientEventBehavior: 0x6000000b8d20; eventDetails: <DNDClientEventDetails: 0x6000020d3080; identifier: '46C7C22F-0AA7-43FF-9267-5600814B38E3'; bundleIdentifier: com.orthly.DandyNotifier; platform: unknown; type: Default; urgency: Default; sender: (null); threadIdentifier: 1842D4107F97DF5E; filterCritera: (null); notifyAnyway: 0; behavior: Default; forwardingBehavior: (null); title: C712C08B7149EAE9; subtitle: C712C08B7149EAE9; body: D8960B5532D2E63>; interruptionSuppression: none; intelligentBehavior: unused; resolutionRe
+default	08:38:55.594516-0500	NotificationCenter	record <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560"> is not intelligentlyBrokethrough
+default	08:38:55.594619-0500	NotificationCenter	addOrUpdate listItem: com.orthly.DandyNotifier:AA26078B:76F8-50D3 from app com.orthly.DandyNotifier, canDisplayWhileCenterIsClosed: true, visibility: [history, alert, lockscreen, allowsScreenWake]
+default	08:38:55.594739-0500	NotificationCenter	[com.orthly.DandyNotifier:AA26078B:76F8-50D3] displaying as alert with pinning behavior .alert
+default	08:38:55.594769-0500	NotificationCenter	Should not play sound for com.orthly.DandyNotifier: playSounds: false, hasAuthorizations: true, notificationsAllowed: true, darkWake: false
+default	08:38:55.594785-0500	NotificationCenter	Not playing sound for <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560">: consoleConnected: true, isMuted: false, hasSound: true, darkWake: false
+default	08:38:55.605834-0500	NotificationCenter	record <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560"> is not intelligentlyBrokethrough
+default	08:38:55.605885-0500	NotificationCenter	[com.orthly.DandyNotifier:AA26078B:76F8-50D3] updating existing notification with content from AA26078B
+default	08:38:59.502088-0500	NotificationCenter	[com.orthly.DandyNotifier:AA26078B:76F8-50D3] action open_action
+default	08:38:59.502249-0500	usernoted	Received response <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560" <response action: action actIdent: open_action foreground: true text: nil> >
+default	08:38:59.502285-0500	usernoted	Remove record from response action: <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560" <response action: action actIdent: open_action foreground: true text: nil> >
+default	08:38:59.502342-0500	usernoted	_removeDelivered: Removing [AA26078B-B6E9-4958-A753-31124567187A] from com.orthly.DandyNotifier
+default	08:38:59.502475-0500	usernoted	_removeDelivered: Removed ["<NotificationRecord app:\"com.orthly.DandyNotifier\" ident:\"76F8-50D3\" req:\"46C7C22F-0AA7-43FF-9267-5600814B38E3\" uuid:\"AA26078B\" source:\"404EB560\">"] from com.orthly.DandyNotifier
+default	08:38:59.503170-0500	usernoted	_removeDisplayed: Removing [AA26078B-B6E9-4958-A753-31124567187A] from com.orthly.DandyNotifier
+default	08:38:59.503217-0500	usernoted	Removing displayed <NotificationRecord app:"com.orthly.DandyNotifier" ident:"76F8-50D3" req:"46C7C22F-0AA7-43FF-9267-5600814B38E3" uuid:"AA26078B" source:"404EB560">
+default	08:38:59.503551-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.001 sec]: Request: Calling pipeline completion for a delete action
+default	08:38:59.503907-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.001 sec]: Request: Starting
+default	08:38:59.504385-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.002 sec]: Running step 'Step: UserNotificationsCore.IntelligenceActor, index: 0'. Remaining steps after this step: 1'
+default	08:38:59.505017-0500	usernoted	Bringing app com.orthly.DandyNotifier front for response
+default	08:38:59.505435-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.003 sec]: Starting step 'Step: UserNotificationsCore.IntelligenceActor, index: 0'
+default	08:38:59.507725-0500	usernoted	[id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier] Removing index
+default	08:38:59.507802-0500	usernoted	Removing index: [com.orthly.DandyNotifier:46C7C22F-0AA7-43FF-9267-5600814B38E3]
+default	08:38:59.503928-0500	NotificationCenter	Found matching model (<private>) to delete with UUID AA26078B from com.orthly.DandyNotifier, destination: ["delivered", "displayed"]
+default	08:38:59.504003-0500	NotificationCenter	Attempting to remove item com.orthly.DandyNotifier:AA26078B:76F8-50D3 from pinned group <private> of app com.orthly.DandyNotifier
+default	08:38:59.504141-0500	NotificationCenter	Removed pinned notification with com.orthly.DandyNotifier:AA26078B:76F8-50D3 from group <private> of app com.orthly.DandyNotifier
+default	08:38:59.504780-0500	NotificationCenter	Unable to find notification to delete matching AA26078B com.orthly.DandyNotifier
+default	08:38:59.509769-0500	NotificationCenter	Unable to find notification to delete matching AA26078B com.orthly.DandyNotifier
+default	08:38:59.510159-0500	NotificationCenter	Unable to find notification to delete matching AA26078B com.orthly.DandyNotifier
+default	08:38:59.522620-0500	runningboardd	Acquiring assertion targeting [app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] from originator [osservice<com.apple.coreservices.launchservicesd>:361] with description <RBSAssertionDescriptor| "frontmost:35802" ID:395-361-71941 target:35802 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.launchservicesd" name:"RoleUserInteractiveFocal" sourceEnvironment:"(null)">
+	]>
+default	08:38:59.522811-0500	runningboardd	Assertion 395-361-71941 (target:[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802]) will be created as active
+default	08:38:59.525577-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring jetsam update because this process is not memory-managed
+default	08:38:59.525650-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring suspend because this process is not lifecycle managed
+default	08:38:59.525767-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Set darwin role to: UserInteractiveFocal
+default	08:38:59.525832-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring GPU update because this process is not GPU managed
+default	08:38:59.525981-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring memory limit update because this process is not memory-managed
+default	08:38:59.526878-0500	runningboardd	Acquiring assertion targeting [app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] from originator [osservice<com.apple.coreservices.launchservicesd>:361] with description <RBSAssertionDescriptor| "notification:35802" ID:395-361-71942 target:35802 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.launchservicesd" name:"LSNotification" sourceEnvironment:"(null)">
+	]>
+default	08:38:59.527025-0500	runningboardd	Assertion 395-361-71942 (target:[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802]) will be created as active
+default	08:38:59.537292-0500	NotificationCenter	Unable to find notification to delete matching AA26078B com.orthly.DandyNotifier
+default	08:38:59.549958-0500	runningboardd	Calculated state for app<application.com.orthly.DandyNotifier.94812331.94812336(502)>: running-active (role: UserInteractiveFocal) (endowments: <private>)
+default	08:38:59.550461-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring jetsam update because this process is not memory-managed
+default	08:38:59.550519-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring suspend because this process is not lifecycle managed
+default	08:38:59.550580-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring GPU update because this process is not GPU managed
+default	08:38:59.550673-0500	runningboardd	[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802] Ignoring memory limit update because this process is not memory-managed
+default	08:38:59.551100-0500	gamepolicyd	Received state update for 35802 (app<application.com.orthly.DandyNotifier.94812331.94812336(502)>, running-active-NotVisible
+default	08:38:59.558350-0500	runningboardd	Calculated state for app<application.com.orthly.DandyNotifier.94812331.94812336(502)>: running-active (role: UserInteractiveFocal) (endowments: <private>)
+default	08:38:59.559046-0500	gamepolicyd	Received state update for 35802 (app<application.com.orthly.DandyNotifier.94812331.94812336(502)>, running-active-NotVisible
+default	08:38:59.568892-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.066 sec]: Calling out to completion with success([id=46C7C22F-0AA7-43FF-9267-5600814B38E3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier]) from 'run(_:_:completion:)'
+default	08:38:59.569173-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.066 sec]: Success for 'Step: UserNotificationsCore.IntelligenceActor, index: 0'.
+default	08:38:59.569310-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.067 sec]: Running step 'Step: UserNotificationsCore.BehaviorResolutionActor, index: 1'. Remaining steps after this step: 0'
+default	08:38:59.569411-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.067 sec]: Starting step 'Step: UserNotificationsCore.BehaviorResolutionActor, index: 1'
+default	08:38:59.569788-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.067 sec]: Calling out to completion with success([id=46C7C22F-0AA7-43FF-9267-5600814B38E3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier]) from 'run(_:_:completion:)'
+default	08:38:59.569957-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.067 sec]: Success for 'Step: UserNotificationsCore.BehaviorResolutionActor, index: 1'.
+default	08:38:59.570105-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.067 sec]: Request: Completed
+default	08:38:59.570327-0500	usernoted	[delete, [id=76F8-50D3, time=2025-10-29 13:38:55, bundle=com.orthly.DandyNotifier], Time elapsed=0.068 sec]: Request: Calling completion delegate
+default	08:39:03.990941-0500	runningboardd	Invalidating assertion 395-361-71941 (target:[app<application.com.orthly.DandyNotifier.94812331.94812336(502)>:35802]) from originator [osservice<com.apple.coreservices.launchservicesd>:361]
