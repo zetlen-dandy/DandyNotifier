@@ -94,13 +94,7 @@ class NotificationManager {
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
         
         // Add notification
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Error showing notification: \(error)")
-            } else {
-                print("✓ Notification displayed: \(payload.title)")
-            }
-        }
+        UNUserNotificationCenter.current().add(request) { _ in }
     }
     
     func handleNotificationResponse(_ response: UNNotificationResponse) {
@@ -108,19 +102,14 @@ class NotificationManager {
         
         // Handle default action (tap on notification)
         if actionId == UNNotificationDefaultActionIdentifier {
-            print("Notification tapped (default action)")
             return
         }
         
         // Handle custom action
         if let action = pendingActions[actionId] {
-            print("Handling action: \(action.id) -> \(action.location)")
-            
             if action.type == "open" {
                 openLocation(action.location)
             }
-            
-            // Clean up
             pendingActions.removeValue(forKey: actionId)
         }
     }

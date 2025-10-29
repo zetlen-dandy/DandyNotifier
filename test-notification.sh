@@ -37,7 +37,8 @@ RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null \
     -d '{
         "notification": {
             "title": "Test Notification",
-            "message": "This is a test from DandyNotifier!"
+            "message": "This is a test from DandyNotifier!",
+            "group": "simple-test"
         }
     }')
 
@@ -47,6 +48,7 @@ else
     echo "❌ (HTTP $RESPONSE)"
     exit 1
 fi
+sleep 0.2
 
 # Test notification with subtitle
 echo -n "Testing notification with subtitle... "
@@ -58,7 +60,8 @@ RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null \
         "notification": {
             "title": "Test Title",
             "subtitle": "Test Subtitle",
-            "message": "This notification has a subtitle"
+            "message": "This notification has a subtitle",
+            "group": "subtitle-test"
         }
     }')
 
@@ -68,6 +71,7 @@ else
     echo "❌ (HTTP $RESPONSE)"
     exit 1
 fi
+sleep 0.2
 
 # Test notification with action button
 echo -n "Testing notification with action button... "
@@ -82,6 +86,7 @@ RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null \
         \"notification\": {
             \"title\": \"Action Button Test\",
             \"message\": \"Click the button to open the log file\",
+            \"group\": \"action-test\",
             \"action\": {
                 \"id\": \"open_log\",
                 \"label\": \"Show Log\",
@@ -99,6 +104,7 @@ else
     echo "❌ (HTTP $RESPONSE)"
     exit 1
 fi
+sleep 0.2
 
 # Test notification with grouping
 echo -n "Testing grouped notifications... "
@@ -110,11 +116,12 @@ for i in 1 2 3; do
             \"notification\": {
                 \"title\": \"Grouped Test $i\",
                 \"message\": \"Message $i of 3\",
-                \"group\": \"test-group\"
+                \"group\": \"test-group-$i\"
             }
         }" > /dev/null
+    sleep 0.2  # Small delay to ensure all appear
 done
-echo "✓ (sent 3 grouped notifications)"
+echo "✓ (sent 3 notifications with unique groups)"
 
 # Test notification with sound
 echo -n "Testing notification with sound... "
@@ -126,7 +133,8 @@ RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null \
         "notification": {
             "title": "Sound Test",
             "message": "This notification should play a sound",
-            "sound": "/System/Library/Sounds/Ping.aiff"
+            "sound": "/System/Library/Sounds/Ping.aiff",
+            "group": "sound-test"
         }
     }')
 
@@ -136,6 +144,7 @@ else
     echo "❌ (HTTP $RESPONSE)"
     exit 1
 fi
+sleep 0.2
 
 echo ""
 echo "✅ All tests passed!"

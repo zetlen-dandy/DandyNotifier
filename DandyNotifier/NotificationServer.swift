@@ -27,17 +27,7 @@ class NotificationServer {
             
             listener = try NWListener(using: parameters, on: NWEndpoint.Port(integerLiteral: port))
             
-            listener?.stateUpdateHandler = { state in
-                switch state {
-                case .ready:
-                    print("✓ Server listening on port \(self.port)")
-                    print("  Auth token: \(self.authToken)")
-                case .failed(let error):
-                    print("✗ Server failed: \(error)")
-                default:
-                    break
-                }
-            }
+            listener?.stateUpdateHandler = { _ in }
             
             listener?.newConnectionHandler = { [weak self] connection in
                 self?.handleConnection(connection)
@@ -45,7 +35,7 @@ class NotificationServer {
             
             listener?.start(queue: .main)
         } catch {
-            print("✗ Failed to start server: \(error)")
+            // Server failed to start - silent failure
         }
     }
     

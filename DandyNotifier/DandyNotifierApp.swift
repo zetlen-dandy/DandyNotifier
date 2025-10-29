@@ -72,14 +72,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
     }
     
     func requestNotificationPermissions() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            if granted {
-                print("✓ Notification permission granted")
-            } else if let error = error {
-                print("✗ Notification permission error: \(error)")
-            } else {
-                print("✗ Notification permission denied")
-            }
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { _, _ in
+            // Permission request completed
         }
     }
     
