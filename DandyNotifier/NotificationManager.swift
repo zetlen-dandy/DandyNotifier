@@ -32,16 +32,6 @@ struct NotificationAction: Codable {
 class NotificationManager {
     private var pendingActions: [String: NotificationAction] = [:]
     
-    init() {
-        // Register notification categories at initialization
-        setupCategories()
-    }
-    
-    private func setupCategories() {
-        // We'll register categories dynamically per notification
-        // This is called once at init to ensure the system is ready
-    }
-    
     func showNotification(_ payload: NotificationPayload) throws {
         let content = UNMutableNotificationContent()
         content.title = payload.title
@@ -65,24 +55,21 @@ class NotificationManager {
         
         // Handle action button
         if let action = payload.action {
-            // Create action without authentication requirement for better UX
             let actionButton = UNNotificationAction(
                 identifier: action.id,
                 title: action.label,
+                options: [.foreground]
+            )
+            
+            let category = UNNotificationCategory(
+                identifier: "ACTIONABLE",
+                actions: [actionButton],
+                intentIdentifiers: [],
                 options: []
             )
             
-            // Create category with custom dismiss for Alert-style notifications
-            let category = UNNotificationCategory(
-                identifier: "ACTIONABLE_\(action.id)",
-                actions: [actionButton],
-                intentIdentifiers: [],
-                options: [.customDismissAction]
-            )
-            
-            // Register category
             UNUserNotificationCenter.current().setNotificationCategories([category])
-            content.categoryIdentifier = "ACTIONABLE_\(action.id)"
+            content.categoryIdentifier = "ACTIONABLE"
             
             // Store action for later handling
             pendingActions[action.id] = action
