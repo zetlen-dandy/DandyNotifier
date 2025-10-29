@@ -23,7 +23,7 @@ class NotificationServer {
         do {
             let parameters = NWParameters.tcp
             parameters.allowLocalEndpointReuse = true
-            parameters.acceptLocalOnly = true  // Only accept connections from localhost
+            parameters.acceptLocalOnly = true
             
             listener = try NWListener(using: parameters, on: NWEndpoint.Port(integerLiteral: port))
             
@@ -34,8 +34,6 @@ class NotificationServer {
                     print("  Auth token: \(self.authToken)")
                 case .failed(let error):
                     print("✗ Server failed: \(error)")
-                case .cancelled:
-                    print("Server cancelled")
                 default:
                     break
                 }
@@ -53,145 +51,105 @@ class NotificationServer {
     
     func stop() {
         listener?.cancel()
-        listener = nil
     }
     
     private func handleConnection(_ connection: NWConnection) {
         connection.start(queue: .main)
-        
         var buffer = Data()
         
-        func receiveData() {
+        func receive() {
             connection.receive(minimumIncompleteLength: 1, maximumLength: 65536) { [weak self] data, _, isComplete, error in
                 if let data = data {
                     buffer.append(data)
                 }
                 
-                // Check if we have a complete HTTP request (ends with \r\n\r\n)
-                if let bufferString = String(data: buffer, encoding: .utf8),
-                   bufferString.contains("\r\n\r\n") {
-                    // We have a complete HTTP request
+                // Check for complete HTTP request (ends with \r\n\r\n)
+                if let str = String(data: buffer, encoding: .utf8), str.contains("\r\n\r\n") {
                     self?.processRequest(buffer, connection: connection)
                 } else if isComplete || error != nil {
-                    // Connection closed or error - process what we have
                     self?.processRequest(buffer, connection: connection)
                 } else {
-                    // Keep receiving
-                    receiveData()
+                    receive()
                 }
             }
         }
-        
-        receiveData()
+        receive()
     }
     
     private func processRequest(_ data: Data, connection: NWConnection) {
-        guard let requestString = String(data: data, encoding: .utf8) else {
-            sendResponse(connection: connection, statusCode: 400, body: "Invalid request")
+        guard let request = String(data: data, encoding: .utf8) else {
+            send(connection, 400, "Bad Request")
             return
         }
         
-        // Parse HTTP request
-        let lines = requestString.components(separatedBy: "\r\n")
-        guard let requestLine = lines.first else {
-            sendResponse(connection: connection, statusCode: 400, body: "Invalid request")
+        let lines = request.components(separatedBy: "\r\n")
+        guard let first = lines.first else {
+            send(connection, 400, "Bad Request")
             return
         }
         
-        let components = requestLine.split(separator: " ")
-        guard components.count >= 2 else {
-            sendResponse(connection: connection, statusCode: 400, body: "Invalid request")
+        let parts = first.split(separator: " ")
+        guard parts.count >= 2 else {
+            send(connection, 400, "Bad Request")
             return
         }
         
-        let method = String(components[0])
-        let path = String(components[1])
+        let method = String(parts[0])
+        let path = String(parts[1])
         
-        // Find headers and body
+        // Parse headers
         var headers: [String: String] = [:]
-        var bodyStartIndex = 0
-        
-        for (index, line) in lines.enumerated() {
+        var bodyStart = 0
+        for (i, line) in lines.enumerated() {
             if line.isEmpty {
-                bodyStartIndex = index + 1
+                bodyStart = i + 1
                 break
             }
-            if index > 0 {
-                if let colonIndex = line.firstIndex(of: ":") {
-                    let key = String(line[..<colonIndex]).trimmingCharacters(in: .whitespaces)
-                    let value = String(line[line.index(after: colonIndex)...]).trimmingCharacters(in: .whitespaces)
-                    headers[key.lowercased()] = value
-                }
+            if i > 0, let colon = line.firstIndex(of: ":") {
+                let key = line[..<colon].trimmingCharacters(in: .whitespaces).lowercased()
+                let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
+                headers[key] = value
             }
         }
         
-        let bodyLines = lines[bodyStartIndex...]
-        let bodyString = bodyLines.joined(separator: "\r\n")
-        let bodyData = bodyString.data(using: .utf8) ?? Data()
+        let bodyData = lines[bodyStart...].joined(separator: "\r\n").data(using: .utf8) ?? Data()
         
-        // Route request
+        // Route
         if path == "/health" && method == "GET" {
-            handleHealth(connection: connection)
+            send(connection, 200, "OK")
         } else if path == "/notify" && method == "POST" {
-            handleNotify(connection: connection, headers: headers, body: bodyData)
+            handleNotify(connection, headers, bodyData)
         } else {
-            sendResponse(connection: connection, statusCode: 404, body: "Not found")
+            send(connection, 404, "Not Found")
         }
     }
     
-    private func handleHealth(connection: NWConnection) {
-        sendResponse(connection: connection, statusCode: 200, body: "OK")
-    }
-    
-    private func handleNotify(connection: NWConnection, headers: [String: String], body: Data) {
-        // Check authentication
-        guard let authHeader = headers["authorization"],
-              authHeader == "Bearer \(authToken)" else {
-            sendResponse(connection: connection, statusCode: 401, body: "Unauthorized")
+    private func handleNotify(_ connection: NWConnection, _ headers: [String: String], _ body: Data) {
+        guard headers["authorization"] == "Bearer \(authToken)" else {
+            send(connection, 401, "Unauthorized")
             return
         }
         
-        // Parse JSON body
-        guard let request = try? JSONDecoder().decode(NotificationRequest.self, from: body) else {
-            sendResponse(connection: connection, statusCode: 400, body: "Invalid JSON")
+        guard let req = try? JSONDecoder().decode(NotificationRequest.self, from: body) else {
+            send(connection, 400, "Invalid JSON")
             return
         }
         
-        // Show notification
         do {
-            try notificationManager.showNotification(request.notification)
-            sendResponse(connection: connection, statusCode: 200, body: "OK")
+            try notificationManager.showNotification(req.notification)
+            send(connection, 200, "OK")
         } catch {
-            sendResponse(connection: connection, statusCode: 500, body: "Error: \(error)")
+            send(connection, 500, "Error: \(error)")
         }
     }
     
-    private func sendResponse(connection: NWConnection, statusCode: Int, body: String) {
-        let response = """
-        HTTP/1.1 \(statusCode) \(httpStatusText(statusCode))
-        Content-Type: text/plain
-        Content-Length: \(body.utf8.count)
-        Connection: close
-        
-        \(body)
-        """
-        
-        let data = response.data(using: .utf8)!
-        connection.send(content: data, completion: .contentProcessed { _ in
-            // Close connection after send completes
+    private func send(_ connection: NWConnection, _ code: Int, _ body: String) {
+        let status = ["200": "OK", "400": "Bad Request", "401": "Unauthorized", 
+                      "404": "Not Found", "500": "Internal Server Error"]["\(code)"] ?? "Unknown"
+        let response = "HTTP/1.1 \(code) \(status)\r\nContent-Length: \(body.utf8.count)\r\n\r\n\(body)"
+        connection.send(content: response.data(using: .utf8), completion: .contentProcessed { _ in
             connection.cancel()
         })
-    }
-    
-    private func httpStatusText(_ code: Int) -> String {
-        switch code {
-        case 200: return "OK"
-        case 400: return "Bad Request"
-        case 401: return "Unauthorized"
-        case 404: return "Not Found"
-        case 500: return "Internal Server Error"
-        default: return "Unknown"
-        }
     }
     
     // MARK: - Auth Token Management
@@ -216,5 +174,3 @@ class NotificationServer {
         return token
     }
 }
-
-
