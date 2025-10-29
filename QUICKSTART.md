@@ -187,7 +187,10 @@ If something doesn't work:
 
 The most common issue is notification permissions. Make sure:
 - "Allow Notifications" is enabled
-- Alert style is set to "Alerts" (not "Banners")
+- **Alert style is set to "Alerts"** (not "Banners") - THIS IS CRITICAL!
+  - Alerts stay on screen until dismissed
+  - Action buttons show as prominent bordered sections
+  - Banners auto-dismiss and hide action buttons
 - DandyNotifier appears in System Settings > Notifications
 
 ---

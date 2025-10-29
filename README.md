@@ -216,7 +216,10 @@ Returns `200 OK` if server is running.
 ### Notifications not appearing
 1. Check System Settings > Notifications > DandyNotifier
 2. Ensure "Allow Notifications" is enabled
-3. Set alert style to "Alerts" (not "Banners")
+3. **IMPORTANT:** Set alert style to **"Alerts"** (not "Banners")
+   - This makes notifications persist until dismissed
+   - Action buttons appear as prominent bordered sections on the right
+   - Without this, action buttons only show on hover and notifications auto-dismiss
 
 ### Action buttons not working
 - Make sure you're using `file://` URLs for local files
