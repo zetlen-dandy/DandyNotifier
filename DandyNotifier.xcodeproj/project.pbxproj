@@ -8,7 +8,6 @@
 
 /* Begin PBXFileReference section */
 		A6AD65A32EB23021006FF012 /* DandyNotifier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DandyNotifier.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A6AD65B62EB23265006FF012 /* DandyNotifyAgent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DandyNotifyAgent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -17,22 +16,10 @@
 			path = DandyNotifier;
 			sourceTree = "<group>";
 		};
-		A6AD65B72EB23265006FF012 /* DandyNotifyAgent */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = DandyNotifyAgent;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		A6AD65A02EB23021006FF012 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A6AD65B32EB23265006FF012 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,7 +33,6 @@
 			isa = PBXGroup;
 			children = (
 				A6AD65A52EB23021006FF012 /* DandyNotifier */,
-				A6AD65B72EB23265006FF012 /* DandyNotifyAgent */,
 				A6AD65A42EB23021006FF012 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -55,7 +41,6 @@
 			isa = PBXGroup;
 			children = (
 				A6AD65A32EB23021006FF012 /* DandyNotifier.app */,
-				A6AD65B62EB23265006FF012 /* DandyNotifyAgent.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -85,28 +70,6 @@
 			productReference = A6AD65A32EB23021006FF012 /* DandyNotifier.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A6AD65B52EB23265006FF012 /* DandyNotifyAgent */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A6AD65BE2EB23266006FF012 /* Build configuration list for PBXNativeTarget "DandyNotifyAgent" */;
-			buildPhases = (
-				A6AD65B22EB23265006FF012 /* Sources */,
-				A6AD65B32EB23265006FF012 /* Frameworks */,
-				A6AD65B42EB23265006FF012 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				A6AD65B72EB23265006FF012 /* DandyNotifyAgent */,
-			);
-			name = DandyNotifyAgent;
-			packageProductDependencies = (
-			);
-			productName = DandyNotifyAgent;
-			productReference = A6AD65B62EB23265006FF012 /* DandyNotifyAgent.app */;
-			productType = "com.apple.product-type.application";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -120,9 +83,6 @@
 					A6AD65A22EB23021006FF012 = {
 						CreatedOnToolsVersion = 26.0.1;
 					};
-					A6AD65B52EB23265006FF012 = {
-						CreatedOnToolsVersion = 26.0.1;
-					};
 				};
 			};
 			buildConfigurationList = A6AD659E2EB23021006FF012 /* Build configuration list for PBXProject "DandyNotifier" */;
@@ -134,13 +94,14 @@
 			);
 			mainGroup = A6AD659A2EB23021006FF012;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A6AD65A42EB23021006FF012 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				A6AD65A22EB23021006FF012 /* DandyNotifier */,
-				A6AD65B52EB23265006FF012 /* DandyNotifyAgent */,
 			);
 		};
 /* End PBXProject section */
@@ -153,24 +114,10 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A6AD65B42EB23265006FF012 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A6AD659F2EB23021006FF012 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A6AD65B22EB23265006FF012 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -382,92 +329,6 @@
 			};
 			name = Release;
 		};
-		A6AD65BF2EB23266006FF012 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S975FWRT26;
-				ENABLE_APP_SANDBOX = NO;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.orthly.DandyNotifyAgent;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		A6AD65C02EB23266006FF012 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = S975FWRT26;
-				ENABLE_APP_SANDBOX = NO;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = YES;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_PREVIEWS = YES;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readonly;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSUIElement = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.orthly.DandyNotifyAgent;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				REGISTER_APP_GROUPS = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -485,15 +346,6 @@
 			buildConfigurations = (
 				A6AD65AF2EB23022006FF012 /* Debug */,
 				A6AD65B02EB23022006FF012 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A6AD65BE2EB23266006FF012 /* Build configuration list for PBXNativeTarget "DandyNotifyAgent" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A6AD65BF2EB23266006FF012 /* Debug */,
-				A6AD65C02EB23266006FF012 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
