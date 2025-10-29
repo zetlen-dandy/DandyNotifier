@@ -37,6 +37,9 @@ class NotificationManager {
         content.title = payload.title
         content.body = payload.message
         
+        // Make notification more prominent and persistent
+        content.interruptionLevel = .timeSensitive
+        
         if let subtitle = payload.subtitle {
             content.subtitle = subtitle
         }
