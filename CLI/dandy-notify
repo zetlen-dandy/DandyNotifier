@@ -23,7 +23,6 @@ SUBTITLE=""
 MESSAGE=""
 GROUP=""
 SOUND=""
-ICON=""
 ACTION_ID=""
 ACTION_LABEL=""
 ACTION_TYPE="open"
@@ -52,10 +51,6 @@ while [[ $# -gt 0 ]]; do
             SOUND="$2"
             shift 2
             ;;
-        --icon)
-            ICON="$2"
-            shift 2
-            ;;
         -o|--open)
             ACTION_LOCATION="$2"
             ACTION_ID="open_action"
@@ -80,7 +75,6 @@ Options:
   -m, --message MESSAGE      Notification message (required)
   -g, --group GROUP          Group identifier for related notifications
   --sound PATH               Path to custom sound file (.aiff)
-  --icon PATH                Path to icon image file
   -o, --open LOCATION        URL or file path to open when clicked
   --action-id ID             Custom action identifier
   --action-label LABEL       Custom action button label
@@ -132,7 +126,6 @@ build_json() {
     [[ -n "$SUBTITLE" ]] && json+=",\"subtitle\":\"$SUBTITLE\""
     [[ -n "$GROUP" ]] && json+=",\"group\":\"$GROUP\""
     [[ -n "$SOUND" ]] && json+=",\"sound\":\"$SOUND\""
-    [[ -n "$ICON" ]] && json+=",\"icon\":\"$ICON\""
     
     if [[ -n "$ACTION_LOCATION" ]]; then
         json+=",\"action\":{"

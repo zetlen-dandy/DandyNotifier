@@ -19,7 +19,6 @@ struct NotificationPayload: Codable {
     let subtitle: String?
     let group: String?
     let sound: String?
-    let icon: String?
     let action: NotificationAction?
 }
 
@@ -44,22 +43,11 @@ class NotificationManager {
         
         // Handle sound
         if let soundPath = payload.sound, !soundPath.isEmpty {
-            // Try custom sound first
             let soundURL = URL(fileURLWithPath: soundPath)
             let soundName = soundURL.lastPathComponent
             content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: soundName))
         } else {
             content.sound = .default
-        }
-        
-        // Handle icon/attachment
-        if let iconPath = payload.icon, !iconPath.isEmpty {
-            let iconURL = URL(fileURLWithPath: iconPath)
-            if FileManager.default.fileExists(atPath: iconPath) {
-                if let attachment = try? UNNotificationAttachment(identifier: "icon", url: iconURL, options: nil) {
-                    content.attachments = [attachment]
-                }
-            }
         }
         
         // Handle action button
