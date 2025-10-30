@@ -13,10 +13,16 @@ class NotificationServer {
     private let port: UInt16 = 8889
     private let notificationManager: NotificationManager
     private let authToken: String
+    static let version = "38d3c9d"  // Updated via build script
     
     init(notificationManager: NotificationManager) {
         self.notificationManager = notificationManager
         self.authToken = Self.getOrCreateAuthToken()
+    }
+    
+    private func log(_ message: String) {
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        print("[\(timestamp)] \(message)")
     }
     
     func start() {
@@ -107,28 +113,38 @@ class NotificationServer {
         // Route
         if path == "/health" && method == "GET" {
             send(connection, 200, "OK")
+        } else if path == "/version" && method == "GET" {
+            send(connection, 200, Self.version)
         } else if path == "/notify" && method == "POST" {
+            log("POST /notify from \(connection)")
             handleNotify(connection, headers, bodyData)
         } else {
+            log("404: \(method) \(path)")
             send(connection, 404, "Not Found")
         }
     }
     
     private func handleNotify(_ connection: NWConnection, _ headers: [String: String], _ body: Data) {
         guard headers["authorization"] == "Bearer \(authToken)" else {
+            log("Unauthorized request")
             send(connection, 401, "Unauthorized")
             return
         }
         
         guard let req = try? JSONDecoder().decode(NotificationRequest.self, from: body) else {
+            if let bodyStr = String(data: body, encoding: .utf8) {
+                log("Invalid JSON: \(bodyStr)")
+            }
             send(connection, 400, "Invalid JSON")
             return
         }
         
         do {
             try notificationManager.showNotification(req.notification)
+            log("✓ Notification sent: \(req.notification.title)")
             send(connection, 200, "OK")
         } catch {
+            log("Error showing notification: \(error)")
             send(connection, 500, "Error: \(error)")
         }
     }

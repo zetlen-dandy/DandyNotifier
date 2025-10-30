@@ -54,7 +54,8 @@ class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDele
         }
         
         let menu = NSMenu()
-        menu.addItem(NSMenuItem(title: "Server Status: Running", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "DandyNotifier v\(NotificationServer.version)", action: nil, keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Server: Running on port 8889", action: nil, keyEquivalent: ""))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit DandyNotifier", action: #selector(quit), keyEquivalent: "q"))
         

@@ -18,6 +18,7 @@ struct DandyNotifyCLI {
         var openLocation: String?
         var executeCommand: String?
         var interruptionLevel: String?
+        var debug = false
         
         var i = args.startIndex
         while i < args.endIndex {
@@ -48,6 +49,8 @@ struct DandyNotifyCLI {
             case "-e", "--execute":
                 i = args.index(after: i)
                 if i < args.endIndex { executeCommand = args[i] }
+            case "-d", "--debug":
+                debug = true
             case "-h", "--help":
                 printHelp()
                 exit(0)
@@ -72,7 +75,8 @@ struct DandyNotifyCLI {
             sound: sound,
             interruptionLevel: interruptionLevel,
             openLocation: openLocation,
-            executeCommand: executeCommand
+            executeCommand: executeCommand,
+            debug: debug
         )
     }
     
@@ -84,7 +88,8 @@ struct DandyNotifyCLI {
         sound: String?,
         interruptionLevel: String?,
         openLocation: String?,
-        executeCommand: String?
+        executeCommand: String?,
+        debug: Bool
     ) {
         let tokenPath = FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent(".dandy-notifier-token")
@@ -131,12 +136,13 @@ struct DandyNotifyCLI {
             exit(1)
         }
         
-        // Debug output
-        if let jsonString = String(data: jsonData, encoding: .utf8) {
-            fputs("Sending: \(jsonString)\n", stderr)
-        }
-        
         let serverURL = ProcessInfo.processInfo.environment["DANDY_SERVER_URL"] ?? "http://localhost:8889"
+        
+        // Debug output
+        if debug, let jsonString = String(data: jsonData, encoding: .utf8) {
+            fputs("Debug: Sending to \(serverURL)/notify\n", stderr)
+            fputs("Debug: JSON: \(jsonString)\n", stderr)
+        }
         guard let url = URL(string: "\(serverURL)/notify") else {
             print("Error: Invalid server URL")
             exit(1)
@@ -182,6 +188,7 @@ Options:
   -i, --interruption LEVEL   Interruption level (passive|active|timeSensitive|critical)
   -o, --open LOCATION        URL or file path to open when clicked
   -e, --execute COMMAND      Shell command to execute when clicked
+  -d, --debug                Print debug output (JSON payload, server URL)
   -h, --help                 Show this help message
 
 Environment Variables:
