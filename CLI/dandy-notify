@@ -25,7 +25,6 @@ GROUP=""
 SOUND=""
 ACTION_ID=""
 ACTION_LABEL=""
-ACTION_TYPE="open"
 ACTION_LOCATION=""
 ACTIONS_JSON=""
 
@@ -63,7 +62,6 @@ while [[ $# -gt 0 ]]; do
             ACTION_LOCATION="$2"
             ACTION_ID="exec_action"
             ACTION_LABEL="Execute"
-            ACTION_TYPE="exec"
             shift 2
             ;;
         --action-id)
@@ -148,14 +146,10 @@ build_json() {
         json+=",\"action\":{"
         json+="\"id\":\"$ACTION_ID\""
         json+=",\"label\":\"$ACTION_LABEL\""
-        json+=",\"type\":\"$ACTION_TYPE\""
-        if [[ "$ACTION_TYPE" == "exec" ]]; then
-            # Parse as shell command (backwards compat for now)
-            json+=",\"exec\":\"/bin/bash\""
-            json+=",\"args\":[\"-c\",\"$ACTION_LOCATION\"]"
-        else
-            json+=",\"location\":\"$ACTION_LOCATION\""
-        fi
+        # -e flag: shell command via bash -c
+        json+=",\"type\":\"exec\""
+        json+=",\"exec\":\"/bin/bash\""
+        json+=",\"args\":[\"-c\",\"$ACTION_LOCATION\"]"
         json+="}"
     fi
     

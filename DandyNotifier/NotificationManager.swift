@@ -113,12 +113,9 @@ class NotificationManager {
                 if let location = action.location {
                     openLocation(location)
                 }
-            case "exec", "execute":  // Support both for backwards compat
+            case "exec":
                 if let exec = action.exec {
                     executeCommand(exec, args: action.args ?? [])
-                } else if let location = action.location {
-                    // Backwards compat: treat location as shell command
-                    executeShellCommand(location)
                 }
             default:
                 break
@@ -151,18 +148,6 @@ class NotificationManager {
             let task = Process()
             task.launchPath = command
             task.arguments = args
-            task.standardOutput = FileHandle.nullDevice
-            task.standardError = FileHandle.nullDevice
-            try? task.run()
-        }
-    }
-    
-    private func executeShellCommand(_ command: String) {
-        // Execute shell command (backwards compat)
-        DispatchQueue.global(qos: .userInitiated).async {
-            let task = Process()
-            task.launchPath = "/bin/bash"
-            task.arguments = ["-c", command]
             task.standardOutput = FileHandle.nullDevice
             task.standardError = FileHandle.nullDevice
             try? task.run()
