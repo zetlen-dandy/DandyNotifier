@@ -68,12 +68,14 @@ install: build
 	@sudo rm -rf "$(INSTALL_PATH)"
 	@sudo cp -R "$(BUILD_DIR)/Build/Products/Release/$(APP_NAME).app" "$(INSTALL_PATH)"
 	
-	@# Install CLI tool (both in app bundle and /usr/local/bin)
+	@# Build and install CLI tool
+	@echo "  Building CLI tool..."
+	@swiftc -parse-as-library -O -o $(BUILD_DIR)/$(CLI_NAME) CLI.swift
 	@echo "  Installing CLI to app bundle..."
-	@sudo cp CLI/$(CLI_NAME) "$(INSTALL_PATH)/Contents/MacOS/$(CLI_NAME)"
+	@sudo cp $(BUILD_DIR)/$(CLI_NAME) "$(INSTALL_PATH)/Contents/MacOS/$(CLI_NAME)"
 	@sudo chmod +x "$(INSTALL_PATH)/Contents/MacOS/$(CLI_NAME)"
 	@echo "  Installing CLI to $(CLI_INSTALL_PATH)..."
-	@sudo cp CLI/$(CLI_NAME) $(CLI_INSTALL_PATH)
+	@sudo cp $(BUILD_DIR)/$(CLI_NAME) $(CLI_INSTALL_PATH)
 	@sudo chmod +x $(CLI_INSTALL_PATH)
 	
 	@# Install launch agent

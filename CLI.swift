@@ -17,6 +17,7 @@ struct DandyNotifyCLI {
         var sound: String?
         var openLocation: String?
         var executeCommand: String?
+        var interruptionLevel: String?
         
         var i = args.startIndex
         while i < args.endIndex {
@@ -38,6 +39,9 @@ struct DandyNotifyCLI {
             case "--sound":
                 i = args.index(after: i)
                 if i < args.endIndex { sound = args[i] }
+            case "-i", "--interruption":
+                i = args.index(after: i)
+                if i < args.endIndex { interruptionLevel = args[i] }
             case "-o", "--open":
                 i = args.index(after: i)
                 if i < args.endIndex { openLocation = args[i] }
@@ -66,6 +70,7 @@ struct DandyNotifyCLI {
             message: message,
             group: group,
             sound: sound,
+            interruptionLevel: interruptionLevel,
             openLocation: openLocation,
             executeCommand: executeCommand
         )
@@ -77,6 +82,7 @@ struct DandyNotifyCLI {
         message: String,
         group: String?,
         sound: String?,
+        interruptionLevel: String?,
         openLocation: String?,
         executeCommand: String?
     ) {
@@ -98,6 +104,7 @@ struct DandyNotifyCLI {
         if let subtitle = subtitle { notification["subtitle"] = subtitle }
         if let group = group { notification["group"] = group }
         if let sound = sound { notification["sound"] = sound }
+        if let interruptionLevel = interruptionLevel { notification["interruptionLevel"] = interruptionLevel }
         
         // Handle actions
         if let openLocation = openLocation {
@@ -172,6 +179,7 @@ Options:
   -m, --message MESSAGE      Notification message (required)
   -g, --group GROUP          Group identifier for related notifications
   --sound PATH               Path to custom sound file (.aiff)
+  -i, --interruption LEVEL   Interruption level (passive|active|timeSensitive|critical)
   -o, --open LOCATION        URL or file path to open when clicked
   -e, --execute COMMAND      Shell command to execute when clicked
   -h, --help                 Show this help message
