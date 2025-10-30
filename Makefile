@@ -68,7 +68,10 @@ install: build
 	@sudo rm -rf "$(INSTALL_PATH)"
 	@sudo cp -R "$(BUILD_DIR)/Build/Products/Release/$(APP_NAME).app" "$(INSTALL_PATH)"
 	
-	@# Install CLI tool
+	@# Install CLI tool (both in app bundle and /usr/local/bin)
+	@echo "  Installing CLI to app bundle..."
+	@sudo cp CLI/$(CLI_NAME) "$(INSTALL_PATH)/Contents/MacOS/$(CLI_NAME)"
+	@sudo chmod +x "$(INSTALL_PATH)/Contents/MacOS/$(CLI_NAME)"
 	@echo "  Installing CLI to $(CLI_INSTALL_PATH)..."
 	@sudo cp CLI/$(CLI_NAME) $(CLI_INSTALL_PATH)
 	@sudo chmod +x $(CLI_INSTALL_PATH)
