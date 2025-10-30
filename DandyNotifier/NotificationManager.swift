@@ -26,8 +26,10 @@ struct NotificationPayload: Codable {
 struct NotificationAction: Codable {
     let id: String
     let label: String
-    let type: String  // "open" or "execute"
-    let location: String  // URL, file path, or shell command
+    let type: String  // "open" or "exec"
+    let location: String?  // For "open" type
+    let exec: String?  // For "exec" type - command to run
+    let args: [String]?  // For "exec" type - command arguments
 }
 
 class NotificationManager {
@@ -108,9 +110,16 @@ class NotificationManager {
         if let action = pendingActions[actionId] {
             switch action.type {
             case "open":
-                openLocation(action.location)
-            case "execute":
-                executeCommand(action.location)
+                if let location = action.location {
+                    openLocation(location)
+                }
+            case "exec", "execute":  // Support both for backwards compat
+                if let exec = action.exec {
+                    executeCommand(exec, args: action.args ?? [])
+                } else if let location = action.location {
+                    // Backwards compat: treat location as shell command
+                    executeShellCommand(location)
+                }
             default:
                 break
             }
@@ -136,8 +145,20 @@ class NotificationManager {
         }
     }
     
-    private func executeCommand(_ command: String) {
-        // Execute shell command
+    private func executeCommand(_ command: String, args: [String]) {
+        // Execute command with arguments
+        DispatchQueue.global(qos: .userInitiated).async {
+            let task = Process()
+            task.launchPath = command
+            task.arguments = args
+            task.standardOutput = FileHandle.nullDevice
+            task.standardError = FileHandle.nullDevice
+            try? task.run()
+        }
+    }
+    
+    private func executeShellCommand(_ command: String) {
+        // Execute shell command (backwards compat)
         DispatchQueue.global(qos: .userInitiated).async {
             let task = Process()
             task.launchPath = "/bin/bash"
