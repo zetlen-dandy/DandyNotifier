@@ -25,8 +25,8 @@ struct NotificationPayload: Codable {
 struct NotificationAction: Codable {
     let id: String
     let label: String
-    let type: String  // "open"
-    let location: String  // URL or file path
+    let type: String  // "open" or "execute"
+    let location: String  // URL, file path, or shell command
 }
 
 class NotificationManager {
@@ -98,8 +98,13 @@ class NotificationManager {
         
         // Handle custom action
         if let action = pendingActions[actionId] {
-            if action.type == "open" {
+            switch action.type {
+            case "open":
                 openLocation(action.location)
+            case "execute":
+                executeCommand(action.location)
+            default:
+                break
             }
             pendingActions.removeValue(forKey: actionId)
         }
@@ -117,9 +122,21 @@ class NotificationManager {
             url = URL(fileURLWithPath: location)
         }
         
-        // Open with default application - must run on main thread
+        // Open with default application
         DispatchQueue.main.async {
             NSWorkspace.shared.open(url)
+        }
+    }
+    
+    private func executeCommand(_ command: String) {
+        // Execute shell command
+        DispatchQueue.global(qos: .userInitiated).async {
+            let task = Process()
+            task.launchPath = "/bin/bash"
+            task.arguments = ["-c", command]
+            task.standardOutput = FileHandle.nullDevice
+            task.standardError = FileHandle.nullDevice
+            try? task.run()
         }
     }
 }

@@ -55,6 +55,14 @@ while [[ $# -gt 0 ]]; do
             ACTION_LOCATION="$2"
             ACTION_ID="open_action"
             ACTION_LABEL="Open"
+            ACTION_TYPE="open"
+            shift 2
+            ;;
+        -e|--execute)
+            ACTION_LOCATION="$2"
+            ACTION_ID="execute_action"
+            ACTION_LABEL="Execute"
+            ACTION_TYPE="execute"
             shift 2
             ;;
         --action-id)
@@ -76,6 +84,7 @@ Options:
   -g, --group GROUP          Group identifier for related notifications
   --sound PATH               Path to custom sound file (.aiff)
   -o, --open LOCATION        URL or file path to open when clicked
+  -e, --execute COMMAND      Shell command to execute when clicked
   --action-id ID             Custom action identifier
   --action-label LABEL       Custom action button label
   -h, --help                 Show this help message
