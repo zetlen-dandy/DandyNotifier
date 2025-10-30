@@ -19,6 +19,7 @@ struct NotificationPayload: Codable {
     let subtitle: String?
     let group: String?
     let sound: String?
+    let interruptionLevel: String?  // "passive", "active", "timeSensitive", "critical"
     let action: NotificationAction?
     let actions: [NotificationAction]?
 }
@@ -40,8 +41,19 @@ class NotificationManager {
         content.title = payload.title
         content.body = payload.message
         
-        // Make notification more prominent and persistent
-        content.interruptionLevel = .timeSensitive
+        // Set interruption level
+        switch payload.interruptionLevel?.lowercased() {
+        case "passive":
+            content.interruptionLevel = .passive
+        case "active":
+            content.interruptionLevel = .active
+        case "timesensitive", "time-sensitive":
+            content.interruptionLevel = .timeSensitive
+        case "critical":
+            content.interruptionLevel = .critical
+        default:
+            content.interruptionLevel = .active  // Default
+        }
         
         if let subtitle = payload.subtitle {
             content.subtitle = subtitle

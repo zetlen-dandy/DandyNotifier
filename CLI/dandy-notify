@@ -23,6 +23,7 @@ SUBTITLE=""
 MESSAGE=""
 GROUP=""
 SOUND=""
+INTERRUPTION=""
 ACTION_ID=""
 ACTION_LABEL=""
 ACTION_LOCATION=""
@@ -49,6 +50,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --sound)
             SOUND="$2"
+            shift 2
+            ;;
+        -i|--interruption)
+            INTERRUPTION="$2"
             shift 2
             ;;
         -o|--open)
@@ -86,6 +91,7 @@ Options:
   -m, --message MESSAGE      Notification message (required)
   -g, --group GROUP          Group identifier for related notifications
   --sound PATH               Path to custom sound file (.aiff)
+  -i, --interruption LEVEL   Interruption level (passive|active|timeSensitive|critical)
   -o, --open LOCATION        URL or file path to open when clicked
   -e, --execute COMMAND      Shell command to execute when clicked
   --action-id ID             Custom action identifier
@@ -139,6 +145,7 @@ build_json() {
     [[ -n "$SUBTITLE" ]] && json+=",\"subtitle\":\"$SUBTITLE\""
     [[ -n "$GROUP" ]] && json+=",\"group\":\"$GROUP\""
     [[ -n "$SOUND" ]] && json+=",\"sound\":\"$SOUND\""
+    [[ -n "$INTERRUPTION" ]] && json+=",\"interruptionLevel\":\"$INTERRUPTION\""
     
     if [[ -n "$ACTIONS_JSON" ]]; then
         json+=",\"actions\":$ACTIONS_JSON"
