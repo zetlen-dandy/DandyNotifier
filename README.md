@@ -156,8 +156,8 @@ curl -X POST http://localhost:8889/notify \
     "action": {
       "id": "string (required)",
       "label": "string (required)",
-      "type": "string (currently only 'open')",
-      "location": "string (required, file:// URL or path)"
+      "type": "string ('open' or 'execute')",
+      "location": "string (required, file:// URL, path, or shell command)"
     }
   }
 }
