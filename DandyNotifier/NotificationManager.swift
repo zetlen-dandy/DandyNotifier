@@ -20,6 +20,7 @@ struct NotificationPayload: Codable {
     let group: String?
     let sound: String?
     let action: NotificationAction?
+    let actions: [NotificationAction]?
 }
 
 struct NotificationAction: Codable {
@@ -53,26 +54,33 @@ class NotificationManager {
             content.sound = .default
         }
         
-        // Handle action button
-        if let action = payload.action {
-            let actionButton = UNNotificationAction(
-                identifier: action.id,
-                title: action.label,
-                options: [.foreground]
-            )
+        // Handle action buttons (single or multiple)
+        let actionsToAdd = payload.actions ?? (payload.action.map { [$0] } ?? [])
+        
+        if !actionsToAdd.isEmpty {
+            let buttons = actionsToAdd.prefix(4).map { action in
+                UNNotificationAction(
+                    identifier: action.id,
+                    title: action.label,
+                    options: [.foreground]
+                )
+            }
             
+            let categoryId = "ACTIONS_\(actionsToAdd.map { $0.id }.joined(separator: "_"))"
             let category = UNNotificationCategory(
-                identifier: "ACTIONABLE",
-                actions: [actionButton],
+                identifier: categoryId,
+                actions: Array(buttons),
                 intentIdentifiers: [],
                 options: []
             )
             
             UNUserNotificationCenter.current().setNotificationCategories([category])
-            content.categoryIdentifier = "ACTIONABLE"
+            content.categoryIdentifier = categoryId
             
-            // Store action for later handling
-            pendingActions[action.id] = action
+            // Store all actions for later handling
+            for action in actionsToAdd {
+                pendingActions[action.id] = action
+            }
         }
         
         // Set thread identifier for grouping
