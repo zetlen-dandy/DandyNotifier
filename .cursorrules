@@ -1,0 +1,258 @@
+# DandyNotifier Cursor Rules
+
+## Project Type
+macOS menubar application (Swift/SwiftUI) with HTTP server and native CLI client.
+
+## Build & Install
+
+**ALWAYS use the Makefile for building and installing:**
+```bash
+make install    # Build, install to /Applications, load LaunchAgent
+make build      # Build only
+make clean      # Clean build artifacts
+make test       # Run test notifications
+```
+
+**NEVER use `sudo make install`** - Causes build artifacts to be owned by root, breaking future builds.
+
+## Code Style & Patterns
+
+### Logging
+- **NEVER use `print()`** - Doesn't work in GUI apps
+- **ALWAYS use FileHandle for logging:**
+  ```swift
+  // Normal logs -> stdout
+  FileHandle.standardOutput.write(data)
+  
+  // Errors -> stderr
+  FileHandle.standardError.write(data)
+  ```
+- **Never use emojis in log messages** - Keep logs parseable
+- **Always include timestamps** - Use ISO8601DateFormatter
+
+### Version Management
+- Version auto-updates during `make build` from `git describe --tags --always`
+- **Never manually edit** the version in `NotificationServer.swift`
+- Version is at line 16: `static let version = "..."`
+- Makefile handles this automatically
+
+### HTTP Server
+- Manual HTTP implementation (no frameworks)
+- 3 endpoints: `/health`, `/version`, `/notify`
+- **Body parsing:** Extract as binary Data after `\r\n\r\n`, never convert to string
+- **Error responses:** Always return JSON with detailed error info
+- **Logging:** Normal requests to stdout, errors to stderr
+
+### CLI Implementation
+- **Use curl via Process(), NOT URLSession** - URLSession has connection reuse bugs
+- Always use `-parse-as-library` flag when compiling
+- Compiled separately from Xcode project
+- Installed to both app bundle and `/usr/local/bin/`
+
+### Action Execution
+- Use `Process()` with explicit `launchPath` and `arguments`
+- Never use `NSWorkspace.open()` - unreliable from background
+- Prefer `/usr/bin/open` via Process for file/URL opening
+- For shell commands: `exec: "/bin/bash", args: ["-c", "command"]`
+
+## Testing Commands
+
+```bash
+# Basic test
+dandy-notify -t "Test" -m "Message"
+
+# Test interruption levels
+dandy-notify -i passive -t "Passive" -m "Subtle"
+dandy-notify -i timeSensitive -t "Important" -m "Breaks Focus"
+dandy-notify -i critical -t "URGENT" -m "Always shows"
+
+# Test with attachment
+dandy-notify -t "Image" -m "Test" -a "/path/to/image.png"
+
+# Test with callback
+dandy-notify -t "Action" -m "Click me" -e "echo 'clicked' >> /tmp/test.log"
+
+# Debug mode
+dandy-notify -d -t "Debug" -m "Show JSON"
+```
+
+## Monitoring & Debugging
+
+```bash
+# Server logs
+tail -f /tmp/DandyNotifier.log        # Normal operations
+tail -f /tmp/DandyNotifier.error.log  # Errors only
+
+# Check server status
+curl http://localhost:8889/version
+curl http://localhost:8889/health
+
+# LaunchAgent status
+launchctl list | grep DandyNotifier
+launchctl print gui/$(id -u)/com.orthly.DandyNotifier
+
+# Process info
+ps aux | grep DandyNotifier | grep -v grep
+```
+
+## Common Patterns
+
+### Adding New Notification Fields
+
+1. Add to `NotificationPayload` struct in `NotificationManager.swift`
+2. Handle in `showNotification()` method
+3. Add CLI flag in `CLI.swift` switch statement
+4. Add to `sendNotification()` parameters
+5. Add to JSON payload construction
+6. Update help text in `printHelp()`
+7. Test thoroughly before committing
+
+### Adding New Endpoints
+
+1. Add route in `processRequest()` in `NotificationServer.swift`
+2. Use `log()` for normal operations
+3. Use `logError()` for errors
+4. Return JSON via `sendJSON()` for data responses
+5. Return plain text via `send()` for simple responses
+
+### Rebuilding After Changes
+
+```bash
+# Full rebuild and install
+make install
+
+# Just rebuild CLI (faster)
+cd /Users/james.zetlen/repos/DandyNotifier
+swiftc -parse-as-library -O -o build/dandy-notify CLI.swift
+cp build/dandy-notify /usr/local/bin/dandy-notify
+chmod +x /usr/local/bin/dandy-notify
+```
+
+### Restarting the Server
+
+```bash
+# Via LaunchAgent (preferred)
+launchctl unload ~/Library/LaunchAgents/com.orthly.DandyNotifier.plist
+launchctl load ~/Library/LaunchAgents/com.orthly.DandyNotifier.plist
+
+# Direct kill
+killall DandyNotifier
+# LaunchAgent will auto-restart if KeepAlive is enabled
+```
+
+## Known Issues & Solutions
+
+### URLSession Connection Reuse Bug
+**Symptom:** First request works, subsequent requests fail with HTTP 400 and empty body.
+**Cause:** URLSession reuses connections and corrupts request body.
+**Solution:** Use curl via Process() instead of URLSession.
+
+### GUI App Logging
+**Symptom:** Logs configured in LaunchAgent plist but files are empty.
+**Cause:** `print()` doesn't write to stdout in GUI apps.
+**Solution:** Use `FileHandle.standardOutput.write()` for all logging.
+
+### HTTP Body Parsing
+**Symptom:** Server receives correct headers but body is empty or corrupted.
+**Cause:** Converting binary data to string and back loses data.
+**Solution:** Extract body as binary Data directly after finding `\r\n\r\n`.
+
+### Action Button Silent Failures
+**Symptom:** Click action button, nothing happens.
+**Cause:** `NSWorkspace.open()` fails silently from background/notification context.
+**Solution:** Use `/usr/bin/open` via `Process()` or allow custom shell execution.
+
+## Code Conventions
+
+### Swift
+- Use explicit types for JSON dictionaries: `[String: Any]`
+- Always handle optionals safely with guard/if-let
+- Use `@main` for executable entry points
+- Use `FileHandle` for all I/O in GUI contexts
+
+### Makefile
+- Use `@` prefix for silent commands
+- Use `$$` for shell variables in Makefile
+- Always check if processes are running before killing
+- Include helpful output messages with emojis (build output only, not logs!)
+
+### Git
+- Commit messages should explain WHY, not just WHAT
+- Keep related changes in single commits
+- Version updates are automatic (don't commit manually)
+
+## Don't Do These Things
+
+❌ **Don't use sudo for make commands** - Breaks permissions
+❌ **Don't use print() for logging** - Won't appear in logs  
+❌ **Don't use URLSession in CLI** - Has connection bugs
+❌ **Don't convert HTTP body to string** - Corrupts binary data
+❌ **Don't use NSWorkspace.open() for actions** - Fails silently
+❌ **Don't manually edit version** - Auto-updates on build
+❌ **Don't add emojis to log messages** - Keep logs parseable
+❌ **Don't commit without testing** - Run `make install` and test first
+
+## Always Do These Things
+
+✅ **Always test after make install** - Verify running version
+✅ **Always check server logs** - Debugging is much easier with logs
+✅ **Always use -d flag when debugging CLI** - Shows JSON payload
+✅ **Always use full paths for commands** - `/usr/bin/open`, not `open`
+✅ **Always handle errors with JSON responses** - Include detailed info
+✅ **Always verify version matches** - `curl localhost:8889/version`
+✅ **Always use FileHandle for logging** - Works with LaunchAgent
+
+## Project-Specific Knowledge
+
+### Why Custom HTTP Server?
+- Only 3 simple endpoints needed
+- Want zero dependencies
+- Keep menubar app lightweight
+- Full control over request/response format
+
+### Why Curl in CLI?
+- URLSession has connection reuse bugs
+- Curl is reliable and universally available
+- Simpler error handling
+- Consistent behavior across requests
+
+### Why FileHandle for Logging?
+- GUI apps don't write print() to stdout
+- LaunchAgent redirects stdout/stderr to files
+- Need explicit FileHandle.write() to make redirection work
+- Allows clean separation of normal logs vs errors
+
+### Why Store Actions in userInfo?
+- In-memory dictionary lost on app restart
+- Git hooks can trigger notifications then app restarts
+- userInfo persists with the notification in Notification Center
+- Allows actions to work even after restart
+
+## File Organization
+
+```
+DandyNotifier/
+├── DandyNotifier/           # Main app target
+│   ├── NotificationServer.swift    # HTTP server
+│   ├── NotificationManager.swift   # UserNotifications logic
+│   ├── DandyNotifierApp.swift      # Menubar app & entry point
+│   ├── ContentView.swift           # Placeholder SwiftUI view
+│   ├── Assets.xcassets/            # App icon
+│   ├── Info.plist                  # Minimal config
+│   └── DandyNotifier.entitlements  # Network + file access
+├── CLI.swift                # Native Swift CLI (separate build)
+├── LaunchAgent/             # Auto-start configuration
+│   └── com.orthly.DandyNotifier.plist
+├── Makefile                 # Build automation
+└── examples/                # Usage examples & git hooks
+```
+
+## Xcode Project Notes
+
+- Single project (no workspace needed)
+- Single scheme: DandyNotifier
+- CLI is NOT part of Xcode target (compiled separately by Makefile)
+- Build settings: Sandbox disabled, network server enabled
+- Code signing: Automatic with development certificate
+- Don't worry about code signing failures during development
+
