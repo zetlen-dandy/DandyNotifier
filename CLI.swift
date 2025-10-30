@@ -113,7 +113,7 @@ struct DandyNotifyCLI {
                 "label": "Open",
                 "type": "open",
                 "location": openLocation
-            ]
+            ] as [String: Any]
         } else if let executeCommand = executeCommand {
             notification["action"] = [
                 "id": "exec_action",
@@ -121,7 +121,7 @@ struct DandyNotifyCLI {
                 "type": "exec",
                 "exec": "/bin/bash",
                 "args": ["-c", executeCommand]
-            ]
+            ] as [String: Any]
         }
         
         let payload = ["notification": notification]
