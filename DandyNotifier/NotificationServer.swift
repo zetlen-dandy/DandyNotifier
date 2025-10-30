@@ -22,7 +22,22 @@ class NotificationServer {
     
     private func log(_ message: String) {
         let timestamp = ISO8601DateFormatter().string(from: Date())
-        print("[\(timestamp)] \(message)")
+        let logMessage = "[\(timestamp)] \(message)\n"
+        
+        // Write to stdout (which LaunchAgent redirects to file)
+        if let data = logMessage.data(using: .utf8) {
+            FileHandle.standardOutput.write(data)
+        }
+    }
+    
+    private func logError(_ message: String) {
+        let timestamp = ISO8601DateFormatter().string(from: Date())
+        let logMessage = "[\(timestamp)] \(message)\n"
+        
+        // Write to stderr (which LaunchAgent redirects to error log)
+        if let data = logMessage.data(using: .utf8) {
+            FileHandle.standardError.write(data)
+        }
     }
     
     func start() {
@@ -73,12 +88,23 @@ class NotificationServer {
     }
     
     private func processRequest(_ data: Data, connection: NWConnection) {
-        guard let request = String(data: data, encoding: .utf8) else {
+        // Find the end of headers (double CRLF)
+        let headerSeparator = Data([13, 10, 13, 10]) // \r\n\r\n
+        guard let separatorRange = data.range(of: headerSeparator) else {
             send(connection, 400, "Bad Request")
             return
         }
         
-        let lines = request.components(separatedBy: "\r\n")
+        // Extract headers and body
+        let headerData = data.subdata(in: 0..<separatorRange.lowerBound)
+        let bodyData = data.subdata(in: separatorRange.upperBound..<data.count)
+        
+        guard let headerString = String(data: headerData, encoding: .utf8) else {
+            send(connection, 400, "Bad Request")
+            return
+        }
+        
+        let lines = headerString.components(separatedBy: "\r\n")
         guard let first = lines.first else {
             send(connection, 400, "Bad Request")
             return
@@ -95,20 +121,13 @@ class NotificationServer {
         
         // Parse headers
         var headers: [String: String] = [:]
-        var bodyStart = 0
-        for (i, line) in lines.enumerated() {
-            if line.isEmpty {
-                bodyStart = i + 1
-                break
-            }
-            if i > 0, let colon = line.firstIndex(of: ":") {
+        for line in lines.dropFirst() {
+            if let colon = line.firstIndex(of: ":") {
                 let key = line[..<colon].trimmingCharacters(in: .whitespaces).lowercased()
                 let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
                 headers[key] = value
             }
         }
-        
-        let bodyData = lines[bodyStart...].joined(separator: "\r\n").data(using: .utf8) ?? Data()
         
         // Route
         if path == "/health" && method == "GET" {
@@ -126,26 +145,49 @@ class NotificationServer {
     
     private func handleNotify(_ connection: NWConnection, _ headers: [String: String], _ body: Data) {
         guard headers["authorization"] == "Bearer \(authToken)" else {
-            log("Unauthorized request")
-            send(connection, 401, "Unauthorized")
+            logError("Unauthorized request - missing or invalid auth token")
+            sendJSON(connection, 401, ["error": "Unauthorized", "message": "Missing or invalid auth token"])
             return
         }
         
-        guard let req = try? JSONDecoder().decode(NotificationRequest.self, from: body) else {
-            if let bodyStr = String(data: body, encoding: .utf8) {
-                log("Invalid JSON: \(bodyStr)")
+        // Try to decode the request
+        let decoder = JSONDecoder()
+        let req: NotificationRequest
+        do {
+            req = try decoder.decode(NotificationRequest.self, from: body)
+        } catch {
+            let bodyStr = String(data: body, encoding: .utf8) ?? "<binary data>"
+            logError("JSON decode error: \(error)")
+            logError("  Received body: \(bodyStr)")
+            
+            var errorDetails: [String: Any] = [
+                "error": "Invalid JSON",
+                "message": error.localizedDescription,
+                "receivedBody": bodyStr
+            ]
+            
+            // Try to decode just to see what fields are present
+            if let json = try? JSONSerialization.jsonObject(with: body) as? [String: Any] {
+                logError("  Parsed keys: \(json.keys.joined(separator: ", "))")
+                errorDetails["parsedKeys"] = Array(json.keys)
+                
+                if let notification = json["notification"] as? [String: Any] {
+                    logError("  Notification keys: \(notification.keys.joined(separator: ", "))")
+                    errorDetails["notificationKeys"] = Array(notification.keys)
+                }
             }
-            send(connection, 400, "Invalid JSON")
+            
+            sendJSON(connection, 400, errorDetails)
             return
         }
         
         do {
             try notificationManager.showNotification(req.notification)
-            log("✓ Notification sent: \(req.notification.title)")
-            send(connection, 200, "OK")
+            log("Notification sent: \(req.notification.title)")
+            sendJSON(connection, 200, ["status": "OK", "message": "Notification sent"])
         } catch {
-            log("Error showing notification: \(error)")
-            send(connection, 500, "Error: \(error)")
+            logError("Error showing notification: \(error)")
+            sendJSON(connection, 500, ["error": "Server Error", "message": error.localizedDescription])
         }
     }
     
@@ -153,6 +195,22 @@ class NotificationServer {
         let status = ["200": "OK", "400": "Bad Request", "401": "Unauthorized", 
                       "404": "Not Found", "500": "Internal Server Error"]["\(code)"] ?? "Unknown"
         let response = "HTTP/1.1 \(code) \(status)\r\nContent-Length: \(body.utf8.count)\r\n\r\n\(body)"
+        connection.send(content: response.data(using: .utf8), completion: .contentProcessed { _ in
+            connection.cancel()
+        })
+    }
+    
+    private func sendJSON(_ connection: NWConnection, _ code: Int, _ json: [String: Any]) {
+        let status = ["200": "OK", "400": "Bad Request", "401": "Unauthorized", 
+                      "404": "Not Found", "500": "Internal Server Error"]["\(code)"] ?? "Unknown"
+        
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: json),
+              let jsonString = String(data: jsonData, encoding: .utf8) else {
+            send(connection, code, "Error serializing JSON response")
+            return
+        }
+        
+        let response = "HTTP/1.1 \(code) \(status)\r\nContent-Type: application/json\r\nContent-Length: \(jsonString.utf8.count)\r\n\r\n\(jsonString)"
         connection.send(content: response.data(using: .utf8), completion: .contentProcessed { _ in
             connection.cancel()
         })

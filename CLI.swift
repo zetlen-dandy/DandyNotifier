@@ -143,36 +143,52 @@ struct DandyNotifyCLI {
             fputs("Debug: Sending to \(serverURL)/notify\n", stderr)
             fputs("Debug: JSON: \(jsonString)\n", stderr)
         }
-        guard let url = URL(string: "\(serverURL)/notify") else {
-            print("Error: Invalid server URL")
-            exit(1)
-        }
+        // Use curl for reliable HTTP requests
+        let process = Process()
+        process.executableURL = URL(fileURLWithPath: "/usr/bin/curl")
+        process.arguments = [
+            "-s",
+            "-X", "POST",
+            "-H", "Content-Type: application/json",
+            "-H", "Authorization: Bearer \(token)",
+            "-d", String(data: jsonData, encoding: .utf8) ?? "",
+            "\(serverURL)/notify"
+        ]
         
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.httpBody = jsonData
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
         
-        let semaphore = DispatchSemaphore(value: 0)
-        var success = false
-        
-        let task = URLSession.shared.dataTask(with: request) { _, response, error in
-            if let error = error {
-                print("Error: \(error.localizedDescription)")
-            } else if let httpResponse = response as? HTTPURLResponse {
-                success = httpResponse.statusCode == 200
-                if !success {
-                    print("Error: Server returned HTTP \(httpResponse.statusCode)")
+        do {
+            try process.run()
+            process.waitUntilExit()
+            
+            let data = pipe.fileHandleForReading.readDataToEndOfFile()
+            if let response = String(data: data, encoding: .utf8), !response.isEmpty {
+                // Parse JSON response if possible
+                if let jsonResponse = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    if jsonResponse["status"] as? String == "OK" {
+                        exit(0)
+                    } else {
+                        print("Error: \(response)")
+                        exit(1)
+                    }
+                } else {
+                    // Plain text response
+                    if response.contains("OK") {
+                        exit(0)
+                    } else {
+                        print("Error: \(response)")
+                        exit(1)
+                    }
                 }
             }
-            semaphore.signal()
+            
+            exit(process.terminationStatus == 0 ? 0 : 1)
+        } catch {
+            print("Error: Failed to execute curl - \(error.localizedDescription)")
+            exit(1)
         }
-        
-        task.resume()
-        semaphore.wait()
-        
-        exit(success ? 0 : 1)
     }
     
     static func printHelp() {
