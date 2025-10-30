@@ -20,6 +20,7 @@ struct NotificationPayload: Codable {
     let group: String?
     let sound: String?
     let interruptionLevel: String?  // "passive", "active", "timeSensitive", "critical"
+    let attachment: String?  // File path or URL to attach (image, video, audio)
     let action: NotificationAction?
     let actions: [NotificationAction]?
 }
@@ -66,6 +67,33 @@ class NotificationManager {
             content.sound = UNNotificationSound(named: UNNotificationSoundName(rawValue: soundName))
         } else {
             content.sound = .default
+        }
+        
+        // Handle attachment (image, video, audio)
+        if let attachmentPath = payload.attachment, !attachmentPath.isEmpty {
+            let attachmentURL: URL
+            if attachmentPath.hasPrefix("http://") || attachmentPath.hasPrefix("https://") {
+                // Download remote file
+                if let url = URL(string: attachmentPath),
+                   let data = try? Data(contentsOf: url) {
+                    let tempDir = FileManager.default.temporaryDirectory
+                    let filename = url.lastPathComponent
+                    let tempFile = tempDir.appendingPathComponent(filename)
+                    try? data.write(to: tempFile)
+                    attachmentURL = tempFile
+                } else {
+                    throw NSError(domain: "NotificationManager", code: 1, 
+                                userInfo: [NSLocalizedDescriptionKey: "Failed to download attachment"])
+                }
+            } else {
+                // Local file
+                attachmentURL = URL(fileURLWithPath: attachmentPath)
+            }
+            
+            // Create attachment
+            if let attachment = try? UNNotificationAttachment(identifier: "attachment", url: attachmentURL, options: nil) {
+                content.attachments = [attachment]
+            }
         }
         
         // Handle action buttons (single or multiple)

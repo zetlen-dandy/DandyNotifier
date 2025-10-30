@@ -18,6 +18,7 @@ struct DandyNotifyCLI {
         var openLocation: String?
         var executeCommand: String?
         var interruptionLevel: String?
+        var attachment: String?
         var debug = false
         
         var i = args.startIndex
@@ -49,6 +50,9 @@ struct DandyNotifyCLI {
             case "-e", "--execute":
                 i = args.index(after: i)
                 if i < args.endIndex { executeCommand = args[i] }
+            case "-a", "--attachment":
+                i = args.index(after: i)
+                if i < args.endIndex { attachment = args[i] }
             case "-d", "--debug":
                 debug = true
             case "-h", "--help":
@@ -74,6 +78,7 @@ struct DandyNotifyCLI {
             group: group,
             sound: sound,
             interruptionLevel: interruptionLevel,
+            attachment: attachment,
             openLocation: openLocation,
             executeCommand: executeCommand,
             debug: debug
@@ -87,6 +92,7 @@ struct DandyNotifyCLI {
         group: String?,
         sound: String?,
         interruptionLevel: String?,
+        attachment: String?,
         openLocation: String?,
         executeCommand: String?,
         debug: Bool
@@ -110,6 +116,7 @@ struct DandyNotifyCLI {
         if let group = group { notification["group"] = group }
         if let sound = sound { notification["sound"] = sound }
         if let interruptionLevel = interruptionLevel { notification["interruptionLevel"] = interruptionLevel }
+        if let attachment = attachment { notification["attachment"] = attachment }
         
         // Handle actions
         if let openLocation = openLocation {
@@ -202,6 +209,7 @@ Options:
   -g, --group GROUP          Group identifier for related notifications
   --sound PATH               Path to custom sound file (.aiff)
   -i, --interruption LEVEL   Interruption level (passive|active|timeSensitive|critical)
+  -a, --attachment PATH      Image, video, or audio file to attach (path or URL)
   -o, --open LOCATION        URL or file path to open when clicked
   -e, --execute COMMAND      Shell command to execute when clicked
   -d, --debug                Print debug output (JSON payload, server URL)
@@ -214,19 +222,23 @@ Examples:
   # Simple notification
   dandy-notify -t "Build Complete" -m "Your project compiled successfully"
 
+  # With image attachment
+  dandy-notify -t "Screenshot Captured" -m "Click to open" -a "/path/to/screenshot.png" -o "/path/to/screenshot.png"
+
+  # With remote image
+  dandy-notify -t "Deploy Success" -m "Check the dashboard" -a "https://example.com/logo.png"
+
   # With action button
   dandy-notify -t "Test Failed" -m "Click to view logs" -o "file:///tmp/test.log"
 
-  # With shell command
-  dandy-notify -t "Deploy Done" -m "Click to view" -e "open https://dashboard.com"
-
-  # Git hook notification
+  # Git hook notification with attachment
   dandy-notify \\
     -t "Repository" \\
     -s "post-commit hook" \\
     -m "Linting failed" \\
     -e "open /tmp/lint.log" \\
     -g "git-hooks" \\
+    -a "/path/to/report.png" \\
     --sound "/System/Library/Sounds/Basso.aiff"
 """)
     }
