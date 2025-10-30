@@ -120,7 +120,7 @@ struct DandyNotifyCLI {
                 "label": "Execute",
                 "type": "exec",
                 "exec": "/bin/bash",
-                "args": ["-c", executeCommand]
+                "args": ["-c", executeCommand] as [String]
             ] as [String: Any]
         }
         
@@ -131,9 +131,9 @@ struct DandyNotifyCLI {
             exit(1)
         }
         
-        // Debug: print JSON
+        // Debug output
         if let jsonString = String(data: jsonData, encoding: .utf8) {
-            // Uncomment for debugging: print("Sending: \(jsonString)")
+            fputs("Sending: \(jsonString)\n", stderr)
         }
         
         let serverURL = ProcessInfo.processInfo.environment["DANDY_SERVER_URL"] ?? "http://localhost:8889"
