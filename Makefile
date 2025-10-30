@@ -35,6 +35,10 @@ help:
 
 build:
 	@echo "🔨 Building $(APP_NAME)..."
+	@# Update version from git
+	@VERSION=$$(git describe --tags --always 2>/dev/null || git rev-parse --short HEAD); \
+	sed -i '' "s/static let version = \".*\" *\/\/ Updated via.*/static let version = \"$$VERSION\"  \/\/ Updated via build script/" DandyNotifier/NotificationServer.swift; \
+	echo "  Updated version to: $$VERSION"
 	xcodebuild -project $(APP_NAME).xcodeproj \
 		-scheme $(SCHEME) \
 		-configuration Release \

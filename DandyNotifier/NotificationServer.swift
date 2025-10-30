@@ -13,7 +13,7 @@ class NotificationServer {
     private let port: UInt16 = 8889
     private let notificationManager: NotificationManager
     private let authToken: String
-    static let version = "c487007-dirty"  // Updated via git hook
+    static let version = "01f0820"  // Updated via build script
     
     init(notificationManager: NotificationManager) {
         self.notificationManager = notificationManager
